@@ -1,0 +1,21 @@
+meta {
+  name: registerNewUser
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base-url}}/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "login": "dima",
+    "password": "aba",
+    "fullname": "full dima",
+    "phoneNumber": "77777777777",
+    "email": "a@ya.ru"
+  }
+}

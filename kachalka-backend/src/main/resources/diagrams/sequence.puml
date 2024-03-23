@@ -1,0 +1,73 @@
+@startuml
+title "Kachalka interaction sequence diagram"
+
+actor "User" as user
+
+box "Services under our control"
+participant "Service" as qr <<qr-validator>>
+participant "Service" as backend <<BackendKachalka>>
+database "backend-db" as db <<PostgreSQL>>
+end box
+
+participant "External" as billing <<BillingService>>
+
+group Certificate purchasing
+activate user
+user -> backend : purchase request
+activate backend
+
+backend -> db ++ : authenticate user\nby credentials
+break user unauthorized
+    db --> user :  return 401 code
+end
+db -> backend -- : result OK
+backend -> db ++ : check that the user doesn't\nown specified certificate
+break specified certificate already belongs to the user
+    db --> user :  return 409 code
+end
+db -> backend -- : result OK
+backend -> billing ++ : send payment request
+break incorrect card info
+    billing --> user :  return 404 code
+end
+break billing service unavailable
+    billing --> user :  return 500 code
+end
+billing -> backend : transaction processing\nstarted 102
+!pragma teoz true
+backend -> user -- : return 102 code
+'& billing -> billing : process\ntransaction
+deactivate user
+billing -> billing : process\ntransaction
+activate backend
+billing -> backend : transaction\nsuccessfully processed
+deactivate billing
+backend -> db ++ : save user-certificate\nconnection
+db -> backend -- : result OK
+deactivate backend
+end group
+
+group Certificate using
+activate user
+user -> backend : get certificate\nrequest
+activate backend
+backend -> db ++ : find user certificate
+break active certificate not found
+    db --> user : return 404 code
+end
+db -> backend -- : send certificate info
+backend -> backend : generate qr
+backend -> user -- : certificate as qr\nand 200 code
+user -> qr ++ : use certificate\nrequest
+qr -> backend ++ : validate request
+backend -> db ++ : find user certificate
+break invalid certificate
+    db --> user : return 404 code
+end
+db -> backend -- : active certificate found
+backend -> qr -- : certificate is valid
+qr -> user -- : return 200 code
+deactivate user
+end group
+
+@enduml

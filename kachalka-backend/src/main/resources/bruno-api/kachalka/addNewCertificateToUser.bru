@@ -1,0 +1,24 @@
+meta {
+  name: addNewCertificateToUser
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base-url}}/v1/user/certificates/647d982d-f2c9-4819-b0aa-1e13d188180b
+  body: json
+  auth: basic
+}
+
+auth:basic {
+  username: dima
+  password: aba
+}
+
+body:json {
+  {
+      "creditCardNumber": "1234 5678 9101 1121",
+      "expirationDate": "12/30",
+      "cvvCode": "123"
+  }
+}

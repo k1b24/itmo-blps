@@ -1,5 +1,0 @@
-spring:
-  r2dbc:
-    url: r2dbc:postgresql://localhost:5434/postgres
-    username: k1b
-    password: deadinside\

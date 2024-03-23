@@ -1,0 +1,16 @@
+meta {
+  name: getCertificates
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{base-url}}/v1/certificates
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: dima
+  password: aba
+}
