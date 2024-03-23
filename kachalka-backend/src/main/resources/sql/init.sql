@@ -1,3 +1,8 @@
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS certificates CASCADE;
+DROP TABLE IF EXISTS certificates_to_users CASCADE;
+DROP TABLE IF EXISTS certificates_transactions CASCADE;
+
 CREATE TABLE IF NOT EXISTS users (
     login           VARCHAR(128) PRIMARY KEY,
     password        VARCHAR(128) NOT NULL,
