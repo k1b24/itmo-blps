@@ -6,7 +6,6 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import ru.itmo.model.TransactionEntity
 import ru.itmo.model.TransactionStatus
-import ru.itmo.util.getNullable
 import ru.itmo.util.getOrThrow
 import java.util.UUID
 
@@ -19,17 +18,23 @@ class UsersInfoDao(
         creditCardNumber: String,
         expirationDate: String,
         cvvCode: String,
-    ): Mono<Void> = databaseClient.sql(
-        """
-            INSERT INTO bank_users_data (user_id, credit_card_number, expiration_date, cvv_code) 
-                VALUES (:user_id, :phone_number, :credit_card_number, :expiration_date, :cvv_code)
-        """.trimIndent()
-    )
-        .bind("user_id", UUID.randomUUID())
-        .bind("credit_card_number", creditCardNumber)
-        .bind("expiration_date", expirationDate)
-        .bind("cvv_code", cvvCode)
-        .then()
+        balance: Float,
+    ): Mono<UUID> {
+        val userId = UUID.randomUUID()
+        return databaseClient.sql(
+            """
+                INSERT INTO bank_users_data (user_id, credit_card_number, expiration_date, cvv_code, balance) 
+                    VALUES (:user_id, :credit_card_number, :expiration_date, :cvv_code, :balance)
+            """.trimIndent()
+        )
+            .bind("user_id", userId)
+            .bind("credit_card_number", creditCardNumber)
+            .bind("expiration_date", expirationDate)
+            .bind("cvv_code", cvvCode)
+            .bind("balance", balance)
+            .then()
+            .then(Mono.just(userId))
+    }
 
     fun findUserId(
         creditCardNumber: String,
