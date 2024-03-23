@@ -4,10 +4,9 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import ru.itmo.dao.UsersInfoDao
-import ru.itmo.model.TransactionStatus
+import ru.itmo.sper.bank.model.TransactionStatus
 import ru.itmo.model.exception.InvalidCardInfoException
 import ru.itmo.sper.bank.model.KachalkaPaymentRequest
-import java.lang.Exception
 import java.util.*
 
 @Service

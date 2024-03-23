@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import ru.itmo.model.TransactionEntity
-import ru.itmo.model.TransactionStatus
+import ru.itmo.sper.bank.model.TransactionStatus
 import ru.itmo.util.getOrThrow
 import java.util.UUID
 
@@ -50,7 +50,7 @@ class UsersInfoDao(
         .bind("expiration_date", expirationDate)
         .bind("cvv_code", cvvCode)
         .map { row, _ ->
-            row.getOrThrow<UUID>("id")
+            row.getOrThrow<UUID>("user_id")
         }
         .first()
 

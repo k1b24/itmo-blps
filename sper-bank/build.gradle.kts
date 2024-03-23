@@ -18,6 +18,7 @@ dependencies {
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    implementation("io.netty:netty-resolver-dns-native-macos::osx-aarch_64")
     implementation(project(mapOf("path" to ":sper-bank-model")))
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")

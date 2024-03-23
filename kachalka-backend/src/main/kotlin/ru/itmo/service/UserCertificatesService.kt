@@ -10,6 +10,7 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import ru.itmo.dao.CertificatesDao
+import ru.itmo.dao.CertificatesTransactionsDao
 import ru.itmo.dao.UserCertificatesDao
 import ru.itmo.dao.UsersDao
 import ru.itmo.exception.PaymentProcessingException
@@ -19,6 +20,8 @@ import ru.itmo.model.request.UserCardInfo
 import ru.itmo.model.response.UserCertificateInfoResponse
 import ru.itmo.service.qr.QrCodeGeneratorService
 import ru.itmo.sper.bank.model.KachalkaPaymentRequest
+import ru.itmo.sper.bank.model.TransactionStatus
+import ru.itmo.sper.bank.model.TransactionStatus.SUCCESS
 import java.time.Instant
 import java.time.LocalTime
 import java.time.ZoneOffset
@@ -32,6 +35,7 @@ class UserCertificatesService(
     private val qrCodeGeneratorService: QrCodeGeneratorService,
     private val sperBankWebClient: WebClient,
     private val usersDao: UsersDao,
+    private val certificatesTransactionsDao: CertificatesTransactionsDao,
 ) {
 
     fun registerCertificateToUserAndGenerateQrCode(
@@ -51,18 +55,35 @@ class UserCertificatesService(
             }
             .flatMap { certificatesDao.getCertificateById(certificateId) }
             .flatMap { certificate -> sendPaymentRequest(certificate.price, userCardInfo) }
+            .flatMap {
+                certificatesTransactionsDao
+                    .insertTransactionInfo(it, authentication.name, certificateId, TransactionStatus.CREATED.name)
+            }
             .then()
-//            .flatMap { certificate ->
-//                userCertificatesDao.addNewCertificateToUser(
-//                    authentication.name,
-//                    certificate.id,
-//                    Instant.now().plus(certificate.duration).toTheEndOfTheDay()
-//                )
-//            }
-//            .then(
-//                qrCodeGeneratorService
-//                    .generateQrCode(objectMapper.writeValueAsString(UserCertificateInfo(authentication.name, certificateId)))
-//            )
+
+    fun handleTransactionStatusUpdated(transactionId: UUID, transactionStatus: TransactionStatus): Mono<Void> =
+        certificatesTransactionsDao.getCertificateTransaction(transactionId)
+            .flatMap { certificateTransactionEntity ->
+                if (transactionStatus == SUCCESS) {
+                    handleSuccessTransaction(
+                        certificateTransactionEntity.certificateId,
+                        certificateTransactionEntity.userLogin,
+                    )
+                        .then(certificatesTransactionsDao.updateTransactionStatus(transactionId, transactionStatus.name))
+                } else {
+                    certificatesTransactionsDao.updateTransactionStatus(transactionId, transactionStatus.name)
+                }
+            }
+
+    fun handleSuccessTransaction(certificateId: UUID, userLogin: String): Mono<Void> =
+        certificatesDao.getCertificateById(certificateId)
+            .flatMap {
+                userCertificatesDao.addNewCertificateToUser(
+                    userLogin,
+                    certificateId,
+                    Instant.now().plus(it.duration).toTheEndOfTheDay(),
+                )
+            }
 
     fun getAvailableCertificates(authentication: Authentication): Flux<UserCertificateInfoResponse> =
         userCertificatesDao.getUserAvailableCertificates(authentication.name)
@@ -80,7 +101,7 @@ class UserCertificatesService(
         .plusDays(1).with(LocalTime.of(23, 59, 59, this.nano))
         .toInstant()
 
-    private fun sendPaymentRequest(amount: Float, userCardInfo: UserCardInfo): Mono<ResponseEntity<Void>> =
+    private fun sendPaymentRequest(amount: Float, userCardInfo: UserCardInfo): Mono<UUID> =
         sperBankWebClient.post()
             .uri("/kachalka-payment")
             .bodyValue(
@@ -95,5 +116,5 @@ class UserCertificatesService(
             .onStatus(HttpStatus::isError) {
                 Mono.error(PaymentProcessingException("An error occurred while payment processing"))
             }
-            .toBodilessEntity()
+            .bodyToMono(UUID::class.java)
 }
