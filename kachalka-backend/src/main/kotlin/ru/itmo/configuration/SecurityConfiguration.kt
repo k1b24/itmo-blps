@@ -27,6 +27,7 @@ class SecurityConfiguration {
             authorizeExchange {
                 authorize("/register", permitAll)
                 authorize("/v1/validator", permitAll)
+                authorize("/transactions/**", permitAll)
                 authorize("/v1/**", authenticated)
             }
 

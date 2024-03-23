@@ -1,3 +1,8 @@
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS certificates CASCADE;
+DROP TABLE IF EXISTS certificates_to_users CASCADE;
+DROP TABLE IF EXISTS certificates_transactions CASCADE;
+
 CREATE TABLE IF NOT EXISTS users (
     login           VARCHAR(128) PRIMARY KEY,
     password        VARCHAR(128) NOT NULL,
@@ -30,4 +35,17 @@ CREATE TABLE IF NOT EXISTS certificates_to_users (
     REFERENCES certificates(id),
     CONSTRAINT certificates_to_users_pk
     PRIMARY KEY (user_login, certificate_id)
-)
+);
+
+CREATE TABLE certificates_transactions (
+    transaction_id      UUID PRIMARY KEY,
+    user_login          VARCHAR(128),
+    certificate_id      UUID,
+    transaction_status  TEXT,
+    CONSTRAINT certificate_id_fk
+        FOREIGN KEY (certificate_id)
+            REFERENCES certificates(id),
+    CONSTRAINT user_login_fk
+        FOREIGN KEY (user_login)
+            REFERENCES users(login)
+);

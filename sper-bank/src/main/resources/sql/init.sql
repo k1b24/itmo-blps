@@ -1,3 +1,6 @@
+DROP TABLE IF EXISTS bank_users_data CASCADE;
+DROP TABLE IF EXISTS transaction_status CASCADE;
+
 CREATE TABLE bank_users_data (
     user_id                 UUID PRIMARY KEY,
     credit_card_number      TEXT,
