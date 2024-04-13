@@ -20,10 +20,6 @@ class UsersInfoDao(
         cvvCode: String,
         balance: Float,
     ): Mono<UUID> {
-        databaseClient.inConnection {
-            it.beginTransaction()
-                it.commitTransaction()
-        }
         val userId = UUID.randomUUID()
         return databaseClient.sql(
             """
