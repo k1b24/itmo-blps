@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS users_roles CASCADE;
 DROP TABLE IF EXISTS certificates CASCADE;
 DROP TABLE IF EXISTS certificates_to_users CASCADE;
 DROP TABLE IF EXISTS certificates_transactions CASCADE;

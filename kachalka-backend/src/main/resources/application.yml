@@ -2,11 +2,11 @@ spring:
   application:
     name: kachalka-backend
   r2dbc:
-    url: r2dbc:postgresql://localhost:5434/postgres
-    username: postgres
-    password: postgres
+    url: r2dbc:postgresql://localhost:5432/kachalka-backend
+    username: kachalka-backend
+    password: kachalka-backend
 server:
-  port: 18200
+  port: 8080
 
 rsa:
   key-path: "certs/key-tg6LK8DqJ0yR8PlZUABTLZZwIC-NKb6jB4tICAaU83I-private.json"
