@@ -11,11 +11,11 @@ import ru.itmo.service.UserCertificatesService
 import java.util.UUID
 
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/v1/user")
 class UserCertificatesController(
     private val userCertificatesService: UserCertificatesService,
 ) {
-    @PostMapping("/user/certificates/{certificate-id}", produces = [MediaType.IMAGE_PNG_VALUE])
+    @PostMapping("/certificates/{certificate-id}", produces = [MediaType.IMAGE_PNG_VALUE])
     fun addNewCertificateToUser(
         @PathVariable("certificate-id") certificateId: UUID,
         @RequestBody userCardInfo: UserCardInfo,
@@ -23,12 +23,12 @@ class UserCertificatesController(
     ): Mono<Void> = userCertificatesService
         .registerCertificateToUserAndGenerateQrCode(certificateId, userCardInfo, authentication)
 
-    @GetMapping("/user/certificates")
+    @GetMapping("/certificates")
     fun getAvailableCertificates(
         authentication: Authentication,
     ): Flux<UserCertificateInfoResponse> = userCertificatesService.getAvailableCertificates(authentication)
 
-    @GetMapping("/user/certificates/{certificate-id}", produces = [MediaType.IMAGE_PNG_VALUE])
+    @GetMapping("/certificates/{certificate-id}", produces = [MediaType.IMAGE_PNG_VALUE])
     fun getCertificateById(
         @PathVariable("certificate-id") certificateId: UUID,
         authentication: Authentication,

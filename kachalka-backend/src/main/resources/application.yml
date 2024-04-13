@@ -2,6 +2,24 @@ spring:
   application:
     name: kachalka-backend
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/kachalka
-    username: kachalka_user
-    password: 123
+    url: r2dbc:postgresql://localhost:5434/postgres
+    username: postgres
+    password: postgres
+server:
+  port: 18200
+
+rsa:
+  key-path: "certs/key-tg6LK8DqJ0yR8PlZUABTLZZwIC-NKb6jB4tICAaU83I-private.json"
+
+security:
+  admin-permission-name: ADMIN
+  admin-users:
+    - s.lazeev
+  permissions:
+    ADMIN:
+      - EDIT_CERTIFICATES
+      - GRANT_MODERATOR_PERMISSIONS
+    MODERATOR:
+      - EDIT_CERTIFICATES
+    USER:
+      - BUY_CERTIFICATES

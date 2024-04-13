@@ -6,19 +6,19 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 import ru.itmo.dao.UsersInfoDao
 import ru.itmo.sper.bank.model.TransactionStatus
 import ru.itmo.model.exception.InvalidCardInfoException
-import ru.itmo.sper.bank.model.KachalkaPaymentRequest
+import ru.itmo.sper.bank.model.PaymentRequest
 import java.util.*
 
 @Service
-class KachalkaPaymentProcessorService(
+class PaymentProcessorService(
     private val usersInfoDao: UsersInfoDao
 ) {
 
-    fun processPayment(kachalkaPaymentRequest: KachalkaPaymentRequest): Mono<UUID> =
+    fun  processPayment(paymentRequest: PaymentRequest): Mono<UUID> =
         usersInfoDao.findUserId(
-            kachalkaPaymentRequest.creditCardNumber,
-            kachalkaPaymentRequest.expirationDate,
-            kachalkaPaymentRequest.cvvCode,
+            paymentRequest.creditCardNumber,
+            paymentRequest.expirationDate,
+            paymentRequest.cvvCode,
         )
             .switchIfEmpty {
                 Mono.error(InvalidCardInfoException("Card data is invalid"))
@@ -27,7 +27,7 @@ class KachalkaPaymentProcessorService(
                 usersInfoDao.createTransaction(
                     userId = userId,
                     status = TransactionStatus.CREATED.name,
-                    amount = kachalkaPaymentRequest.amount,
+                    amount = paymentRequest.amount,
                 )
             }
 }

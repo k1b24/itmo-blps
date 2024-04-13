@@ -22,6 +22,8 @@ dependencies {
     implementation("com.google.zxing:core:3.3.0")
     implementation("com.google.zxing:javase:3.3.0")
     implementation("io.netty:netty-resolver-dns-native-macos::osx-aarch_64")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+    implementation("com.nimbusds:nimbus-jose-jwt")
 
     implementation(project(mapOf("path" to ":sper-bank-model")))
 

@@ -11,6 +11,14 @@ CREATE TABLE IF NOT EXISTS users (
     email           VARCHAR(128) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS users_roles (
+    user_login      VARCHAR(128) NOT NULL,
+    role      TEXT NOT NULL,
+    constraint user_login_fk
+    FOREIGN KEY (user_login)
+    REFERENCES users(login)
+);
+
 CREATE TABLE IF NOT EXISTS certificates (
     id              UUID PRIMARY KEY,
     title           VARCHAR(128) NOT NULL,

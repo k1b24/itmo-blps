@@ -1,6 +1,6 @@
 package ru.itmo.sper.bank.model
 
-data class KachalkaPaymentRequest(
+data class PaymentRequest(
     val creditCardNumber: String,
     val expirationDate: String,
     val cvvCode: String,

@@ -2,7 +2,6 @@ package ru.itmo.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
@@ -19,7 +18,7 @@ import ru.itmo.model.UserCertificateInfo
 import ru.itmo.model.request.UserCardInfo
 import ru.itmo.model.response.UserCertificateInfoResponse
 import ru.itmo.service.qr.QrCodeGeneratorService
-import ru.itmo.sper.bank.model.KachalkaPaymentRequest
+import ru.itmo.sper.bank.model.PaymentRequest
 import ru.itmo.sper.bank.model.TransactionStatus
 import ru.itmo.sper.bank.model.TransactionStatus.SUCCESS
 import java.time.Instant
@@ -105,7 +104,7 @@ class UserCertificatesService(
         sperBankWebClient.post()
             .uri("/kachalka-payment")
             .bodyValue(
-                KachalkaPaymentRequest(
+                PaymentRequest(
                     creditCardNumber = userCardInfo.creditCardNumber,
                     expirationDate = userCardInfo.expirationDate,
                     cvvCode = userCardInfo.cvvCode,

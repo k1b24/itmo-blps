@@ -8,6 +8,6 @@ import org.springframework.web.reactive.function.client.WebClient
 class WebClientConfiguration {
 
     @Bean
-    fun sperBankWebClient(): WebClient = WebClient.builder().baseUrl("http://localhost:8081").build()
+    fun sperBankWebClient(): WebClient = WebClient.builder().baseUrl("http://localhost:18201").build()
 
 }
