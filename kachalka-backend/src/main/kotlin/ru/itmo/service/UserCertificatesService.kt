@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -60,6 +61,7 @@ class UserCertificatesService(
             }
             .then()
 
+    @Transactional
     fun handleTransactionStatusUpdated(transactionId: UUID, transactionStatus: TransactionStatus): Mono<Void> =
         certificatesTransactionsDao.getCertificateTransaction(transactionId)
             .flatMap { certificateTransactionEntity ->
