@@ -86,9 +86,11 @@ class UserCertificatesService(
                 )
             }
 
+    @Transactional(readOnly = true)
     fun getAvailableCertificates(authentication: Authentication): Flux<UserCertificateInfoResponse> =
         userCertificatesDao.getUserAvailableCertificates(authentication.name)
 
+    @Transactional(readOnly = true)
     fun getCertificateById(certificateId: UUID, authentication: Authentication): Mono<ByteArray> =
         userCertificatesDao.getCertificateById(certificateId, authentication.name).switchIfEmpty {
             Mono.error(NoSuchElementException("No such available certificates by specified id = $certificateId"))
