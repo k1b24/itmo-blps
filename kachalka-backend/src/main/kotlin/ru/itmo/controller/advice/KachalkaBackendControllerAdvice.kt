@@ -24,11 +24,21 @@ class KachalkaBackendControllerAdvice {
 
     @ExceptionHandler
     fun paymentProcessingExceptionHandler(exception: PaymentProcessingException): ResponseEntity<ErrorResponse> =
-        ResponseEntity.internalServerError()
+        ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
             .body(
                 ErrorResponse(
-                    message = "Payment service is unavailable",
-                    status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    message = exception.message,
+                    status = HttpStatus.SERVICE_UNAVAILABLE.value(),
+                )
+            )
+
+    @ExceptionHandler
+    fun cardInfoNotFoundExceptionHandler(exception: PaymentProcessingException): ResponseEntity<ErrorResponse> =
+        ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(
+                ErrorResponse(
+                    message = exception.message,
+                    status = HttpStatus.NOT_FOUND.value(),
                 )
             )
 
@@ -48,7 +58,7 @@ class KachalkaBackendControllerAdvice {
             .body(
                 ErrorResponse(
                     message = exception.message,
-                    status = HttpStatus.BAD_REQUEST.value(),
+                    status = HttpStatus.CONFLICT.value(),
                 )
             )
 }

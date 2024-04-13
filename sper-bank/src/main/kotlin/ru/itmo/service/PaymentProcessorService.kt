@@ -1,6 +1,7 @@
 package ru.itmo.service
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import ru.itmo.dao.UsersInfoDao
@@ -14,6 +15,7 @@ class PaymentProcessorService(
     private val usersInfoDao: UsersInfoDao
 ) {
 
+    @Transactional
     fun  processPayment(paymentRequest: PaymentRequest): Mono<UUID> =
         usersInfoDao.findUserId(
             paymentRequest.creditCardNumber,

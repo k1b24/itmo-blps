@@ -6,8 +6,10 @@ import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.WebClient
 import ru.itmo.dao.UsersInfoDao
+import ru.itmo.model.TransactionEntity
 import ru.itmo.sper.bank.model.TransactionStatus
 
 @Component
@@ -24,7 +26,7 @@ class CreatedTransactionHandler(
         }
     }
 
-    private suspend fun startTransactionsHandling() {
+    suspend fun startTransactionsHandling() {
         println("started transactions handling")
         while (true) {
             try {
@@ -33,9 +35,7 @@ class CreatedTransactionHandler(
                 transactions.forEach { transaction ->
                     val balance = usersInfoDao.getUserBalance(transaction.userId).awaitSingle()
                     if (balance - transaction.amount >= 0) {
-                        usersInfoDao.updateUserBalance(transaction.userId, balance - transaction.amount).awaitFirstOrNull()
-                        kachalkaWebClient.post().uri("/transactions/${transaction.id}/status/${TransactionStatus.SUCCESS.name}").retrieve().toBodilessEntity().awaitFirstOrNull()
-                        usersInfoDao.updateTransactionStatus(transaction.id, TransactionStatus.SUCCESS.name).awaitFirstOrNull()
+                        performPossibleTransaction(transaction, balance)
                     } else {
                         kachalkaWebClient.post().uri("/transactions/${transaction.id}/status/${TransactionStatus.ERROR.name}").retrieve().toBodilessEntity().awaitFirstOrNull()
                         usersInfoDao.updateTransactionStatus(transaction.id, TransactionStatus.ERROR.name).awaitFirstOrNull()
@@ -46,5 +46,12 @@ class CreatedTransactionHandler(
             }
             delay(10000)
         }
+    }
+
+    @Transactional
+    suspend fun performPossibleTransaction(transaction: TransactionEntity, balance: Float) {
+        usersInfoDao.updateUserBalance(transaction.userId, balance - transaction.amount).awaitFirstOrNull()
+        kachalkaWebClient.post().uri("/transactions/${transaction.id}/status/${TransactionStatus.SUCCESS.name}").retrieve().toBodilessEntity().awaitFirstOrNull()
+        usersInfoDao.updateTransactionStatus(transaction.id, TransactionStatus.SUCCESS.name).awaitFirstOrNull()
     }
 }

@@ -13,6 +13,7 @@ import ru.itmo.dao.CertificatesDao
 import ru.itmo.dao.CertificatesTransactionsDao
 import ru.itmo.dao.UserCertificatesDao
 import ru.itmo.dao.UsersDao
+import ru.itmo.exception.CardInfoNotFoundException
 import ru.itmo.exception.PaymentProcessingException
 import ru.itmo.exception.UserAlreadyHasSuchCertificateException
 import ru.itmo.model.UserCertificateInfo
@@ -116,8 +117,11 @@ class UserCertificatesService(
                 )
             )
             .retrieve()
-            .onStatus(HttpStatus::isError) {
-                Mono.error(PaymentProcessingException("An error occurred while payment processing"))
+            .onStatus(HttpStatus::is5xxServerError) {
+                Mono.error(PaymentProcessingException("Payment service is unavailable"))
+            }
+            .onStatus(HttpStatus::is4xxClientError) {
+                Mono.error(CardInfoNotFoundException("Incorrect card info"))
             }
             .bodyToMono(UUID::class.java)
 }
