@@ -3,9 +3,10 @@ package ru.itmo.dao
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
+import ru.itmo.exception.UserNotFoundException
 import ru.itmo.model.KachalkaUserInfo
+import ru.itmo.util.getNullable
 import ru.itmo.util.getOrThrow
-import java.util.UUID
 
 @Component
 class UsersDao(
@@ -16,7 +17,7 @@ class UsersDao(
         .sql("SELECT password FROM users WHERE login = :login")
         .bind("login", login)
         .map { row, _ ->
-            row.getOrThrow<String>("password")
+            row.getNullable<String>("password") ?: throw UserNotFoundException("User $login not found")
         }
         .first()
 
