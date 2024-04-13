@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import ru.itmo.exception.CardInfoNotFoundException
 import ru.itmo.exception.PaymentProcessingException
 import ru.itmo.exception.UserAlreadyHasSuchCertificateException
 import ru.itmo.model.response.ErrorResponse
@@ -33,7 +34,7 @@ class KachalkaBackendControllerAdvice {
             )
 
     @ExceptionHandler
-    fun cardInfoNotFoundExceptionHandler(exception: PaymentProcessingException): ResponseEntity<ErrorResponse> =
+    fun cardInfoNotFoundExceptionHandler(exception: CardInfoNotFoundException): ResponseEntity<ErrorResponse> =
         ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(
                 ErrorResponse(
