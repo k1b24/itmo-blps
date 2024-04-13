@@ -9,8 +9,6 @@ import ru.itmo.model.UserRole
 class ModeratorService(
     private val usersRolesDao: UsersRolesDao
 ) {
-
     fun addModeratorRoleToUser(login: String): Mono<Void> = usersRolesDao
         .saveRolesForUser(login, UserRole.MODERATOR.name)
-
 }

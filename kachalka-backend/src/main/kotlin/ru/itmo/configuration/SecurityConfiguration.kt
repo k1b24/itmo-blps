@@ -2,13 +2,13 @@ package ru.itmo.configuration
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.config.web.server.invoke
-import org.springframework.security.core.userdetails.User
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.server.SecurityWebFilterChain
@@ -24,9 +24,7 @@ import ru.itmo.service.JwtTokenService
 
 @Configuration
 @EnableWebFluxSecurity
-class SecurityConfiguration(
-    private val securityProperties: SecurityProperties
-) {
+class SecurityConfiguration {
 
     @Bean
     fun springSecurityFilterChain(
@@ -42,6 +40,7 @@ class SecurityConfiguration(
 //                authorize("/v1/**", authenticated)
                 authorize("/v1/login", authenticated)
                 authorize("/v1/user/**", hasAuthority(UserPermission.BUY_CERTIFICATES.name))
+                authorize(ServerWebExchangeMatchers.pathMatchers(GET, "/v1/certificates"), hasAuthority(UserPermission.BUY_CERTIFICATES.name))
                 authorize("/v1/certificates/**", hasAuthority(UserPermission.EDIT_CERTIFICATES.name))
                 authorize("/v1/moderators/**", hasAuthority(UserPermission.GRANT_MODERATOR_PERMISSIONS.name))
             }

@@ -1,6 +1,7 @@
 package ru.itmo.service
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import ru.itmo.dao.CertificatesDao
@@ -10,12 +11,12 @@ import java.util.UUID
 
 @Service
 class CertificateService(
-    val certificatesDao: ru.itmo.dao.CertificatesDao,
+    val certificatesDao: CertificatesDao,
 ) {
+    @Transactional(readOnly = true)
+    fun getCertificates(): Flux<Certificate> = certificatesDao.getCertificates()
 
-    fun getCertificates(): Flux<ru.itmo.model.Certificate> = certificatesDao.getCertificates()
-
-    fun addNewCertificate(certificate: ru.itmo.model.request.AddCertificateRequest): Mono<Void> =
+    fun addNewCertificate(certificate: AddCertificateRequest): Mono<Void> =
         certificatesDao.addCertificate(
             id = UUID.randomUUID(),
             name = certificate.title,
@@ -29,5 +30,4 @@ class CertificateService(
 
     fun deleteCertificateById(certificateId: UUID): Mono<Void> =
         certificatesDao.deleteCertificateById(certificateId)
-
 }
