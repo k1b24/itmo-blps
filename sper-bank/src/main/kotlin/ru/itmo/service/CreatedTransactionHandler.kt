@@ -36,6 +36,7 @@ class CreatedTransactionHandler(
                     val balance = usersInfoDao.getUserBalance(transaction.userId).awaitSingle()
                     if (balance - transaction.amount >= 0) {
                         performPossibleTransaction(transaction, balance)
+                        kachalkaWebClient.post().uri("/transactions/${transaction.id}/status/${TransactionStatus.SUCCESS.name}").retrieve().toBodilessEntity().awaitFirstOrNull()
                     } else {
                         kachalkaWebClient.post().uri("/transactions/${transaction.id}/status/${TransactionStatus.ERROR.name}").retrieve().toBodilessEntity().awaitFirstOrNull()
                         usersInfoDao.updateTransactionStatus(transaction.id, TransactionStatus.ERROR.name).awaitFirstOrNull()
@@ -51,7 +52,6 @@ class CreatedTransactionHandler(
     @Transactional
     suspend fun performPossibleTransaction(transaction: TransactionEntity, balance: Float) {
         usersInfoDao.updateUserBalance(transaction.userId, balance - transaction.amount).awaitFirstOrNull()
-        kachalkaWebClient.post().uri("/transactions/${transaction.id}/status/${TransactionStatus.SUCCESS.name}").retrieve().toBodilessEntity().awaitFirstOrNull()
         usersInfoDao.updateTransactionStatus(transaction.id, TransactionStatus.SUCCESS.name).awaitFirstOrNull()
     }
 }

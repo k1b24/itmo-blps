@@ -13,7 +13,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Component
 import ru.itmo.model.response.TokenResponse
 import ru.itmo.security.BearerTokenUserAuthentication
-import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import java.util.*
@@ -53,7 +52,9 @@ class JwtTokenService(
         return BearerTokenUserAuthentication(
             username = claimsSet.subject,
             permissions = claimsSet.getStringListClaim(PERMISSIONS_CLAIM_KEY)
-                .map { SimpleGrantedAuthority(it) },
+                .map {
+                    SimpleGrantedAuthority(it)
+                     },
             token = token,
         )
     }
