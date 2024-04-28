@@ -2,6 +2,7 @@ package ru.itmo.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.HttpStatus
+import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -9,6 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
+import ru.itmo.configuration.kafka.KachalkaKafkaProperties
 import ru.itmo.dao.CertificatesDao
 import ru.itmo.dao.CertificatesTransactionsDao
 import ru.itmo.dao.UserCertificatesDao
@@ -17,6 +19,7 @@ import ru.itmo.exception.CardInfoNotFoundException
 import ru.itmo.exception.PaymentProcessingException
 import ru.itmo.exception.UserAlreadyHasSuchCertificateException
 import ru.itmo.model.UserCertificateInfo
+import ru.itmo.model.event.CertificateBoughtEvent
 import ru.itmo.model.request.UserCardInfo
 import ru.itmo.model.response.UserCertificateInfoResponse
 import ru.itmo.service.qr.QrCodeGeneratorService
@@ -37,6 +40,8 @@ class UserCertificatesService(
     private val sperBankWebClient: WebClient,
     private val usersDao: UsersDao,
     private val certificatesTransactionsDao: CertificatesTransactionsDao,
+    private val kafkaTemplate: ReactiveKafkaProducerTemplate<String, CertificateBoughtEvent>,
+    private val kachalkaKafkaProperties: KachalkaKafkaProperties,
 ) {
 
     fun registerCertificateToUserAndGenerateQrCode(
@@ -85,7 +90,15 @@ class UserCertificatesService(
                     certificateId,
                     Instant.now().plus(it.duration).toTheEndOfTheDay(),
                 )
-            }
+            }.then(sendUserCertificateBoughtEvent(certificateId, userLogin))
+
+    fun sendUserCertificateBoughtEvent(certificateId: UUID, userLogin: String): Mono<Void> =
+        kafkaTemplate
+            .send(
+                kachalkaKafkaProperties.certificateBoughtTopic,
+                CertificateBoughtEvent(userLogin, certificateId),
+            )
+            .then()
 
     @Transactional(readOnly = true)
     fun getAvailableCertificates(authentication: Authentication): Flux<UserCertificateInfoResponse> =

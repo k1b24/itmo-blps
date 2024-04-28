@@ -15,6 +15,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     implementation("org.postgresql:r2dbc-postgresql")
+    implementation("org.springframework.kafka:spring-kafka")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -23,7 +24,9 @@ dependencies {
     implementation("com.google.zxing:javase:3.3.0")
     implementation("io.netty:netty-resolver-dns-native-macos::osx-aarch_64")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+    implementation("org.springframework.security:spring-security-oauth2-client")
     implementation("com.nimbusds:nimbus-jose-jwt")
+    implementation("io.projectreactor.kafka:reactor-kafka")
 
     implementation(project(mapOf("path" to ":sper-bank-model")))
 

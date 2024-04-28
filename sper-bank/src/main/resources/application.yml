@@ -2,8 +2,8 @@ spring:
   application:
     name: sper-bank
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/sper-bank
-    username: sper-bank
-    password: sper-bank
+    url: r2dbc:postgresql://localhost:5434/postgres
+    username: k1b
+    password: deadinside\
 server:
   port: 18201
