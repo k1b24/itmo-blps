@@ -1,19 +1,49 @@
 version: '3.8'
 services:
-  kachalka-backend:
-    container_name: kachalka-backend
+  kachalka-backend-1:
+    container_name: kachalka-backend-1
     image: openjdk:17-ea-16-jdk
     volumes:
       - ./kachalka-backend/build/libs/kachalka-backend-0.0.1-SNAPSHOT.jar:/kachalka-backend.jar
     command: [ "java", "-jar", "kachalka-backend.jar"]
     ports:
-      - "8080:8080"
+      - "666:8080"
     networks:
       - kachalka-network
     depends_on:
       - kachalka-postgresql
       - kafka
       - keycloak
+
+  kachalka-backend-2:
+    container_name: kachalka-backend-2
+    image: openjdk:17-ea-16-jdk
+    volumes:
+      - ./kachalka-backend/build/libs/kachalka-backend-0.0.1-SNAPSHOT.jar:/kachalka-backend.jar
+    command: [ "java", "-jar", "kachalka-backend.jar" ]
+    ports:
+      - "777:8080"
+    networks:
+      - kachalka-network
+    depends_on:
+      - kachalka-postgresql
+      - kafka
+      - keycloak
+
+  balancer:
+    image: nginx
+    volumes:
+      - type: bind
+        source: ./nginx/nginx.conf
+        target: /etc/nginx/conf.d/default.conf
+        read_only: true
+    ports:
+      - "80:80"
+    depends_on:
+      - kachalka-backend-1
+      - kachalka-backend-2
+    networks:
+      - kachalka-network
 
   sper-bank:
     container_name: sper-bank
@@ -24,7 +54,7 @@ services:
     networks:
       - kachalka-network
     depends_on:
-      - kachalka-backend
+      - kachalka-backend-1
       - sper-bank-postgresql
 
   kachalka-postgresql:
