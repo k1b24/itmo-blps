@@ -8,5 +8,5 @@ import org.springframework.web.reactive.function.client.WebClient
 class WebClientConfiguration {
 
     @Bean
-    fun kachalkaWebClient(): WebClient = WebClient.builder().baseUrl("http://localhost:8080").build()
+    fun kachalkaWebClient(): WebClient = WebClient.builder().baseUrl("http://kachalka-backend:8080").build()
 }

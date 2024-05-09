@@ -34,7 +34,7 @@ springBoot {
 }
 
 tasks.withType<BootJar> {
-    archiveBaseName.set(rootProject.name)
+    archiveBaseName.set("qr-validator-service")
 }
 
 tasks.getByName<Jar>("jar") {

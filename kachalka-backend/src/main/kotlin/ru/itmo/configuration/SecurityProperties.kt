@@ -8,7 +8,5 @@ import ru.itmo.model.UserRole
 @ConfigurationProperties("security")
 @ConstructorBinding
 data class SecurityProperties(
-    val adminPermissionName: UserRole,
-    val adminUsers: List<String>,
     val permissions: Map<UserRole, List<UserPermission>>,
 )

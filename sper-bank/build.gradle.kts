@@ -31,7 +31,7 @@ springBoot {
 }
 
 tasks.withType<BootJar> {
-    archiveBaseName.set(rootProject.name)
+    archiveBaseName.set("sper-bank")
 }
 
 tasks.getByName<Jar>("jar") {

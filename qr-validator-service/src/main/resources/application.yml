@@ -2,4 +2,4 @@ spring:
   application:
     name: qr-validator-service
 server:
-  port: 18202
+  port: 8081

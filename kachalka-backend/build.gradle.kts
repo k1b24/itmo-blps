@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
@@ -7,6 +8,7 @@ plugins {
 }
 
 version = "0.0.1-SNAPSHOT"
+project.archivesName = "kachalka-backend"
 
 apply(plugin = "io.spring.dependency-management")
 
@@ -40,7 +42,7 @@ springBoot {
 }
 
 tasks.withType<BootJar> {
-    archiveBaseName.set(rootProject.name)
+    archiveBaseName.set("kachalka-backend")
 }
 
 tasks.getByName<Jar>("jar") {
