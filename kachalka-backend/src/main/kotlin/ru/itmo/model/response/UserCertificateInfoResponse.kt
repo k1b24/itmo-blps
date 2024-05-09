@@ -7,5 +7,5 @@ data class UserCertificateInfoResponse(
     val certificateId: UUID,
     val title: String,
     val expirationDate: Instant,
-    val description: String,
+    val description: String?,
 )

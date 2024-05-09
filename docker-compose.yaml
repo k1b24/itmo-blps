@@ -54,7 +54,7 @@ services:
     networks:
       - kachalka-network
     depends_on:
-      - kachalka-backend-1
+      - balancer
       - sper-bank-postgresql
 
   kachalka-postgresql:

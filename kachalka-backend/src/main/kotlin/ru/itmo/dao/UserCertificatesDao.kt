@@ -6,6 +6,7 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import ru.itmo.model.response.UserCertificateInfoResponse
+import ru.itmo.util.getNullable
 import ru.itmo.util.getOrThrow
 import java.time.Instant
 import java.util.UUID
@@ -42,7 +43,7 @@ class UserCertificatesDao(
                 certificateId = row.getOrThrow("id"),
                 title = row.getOrThrow("title"),
                 expirationDate = row.getOrThrow("expires_at"),
-                description = row.getOrThrow("description"),
+                description = row.getNullable("description"),
             )
         }
         .all()
