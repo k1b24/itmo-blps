@@ -49,18 +49,18 @@ class UserCertificatesService(
         userCardInfo: UserCardInfo,
         authentication: Authentication,
     ): Mono<Void> =
-        usersDao.findUserByLogin(authentication.name)
-            .flatMap { userInfo ->
-                userCertificatesDao.getUserAvailableCertificates(userInfo.login)
-                    .collectList()
-                    .flatMap { userCertificates ->
-                        if (userCertificates.map { it.certificateId }.contains(certificateId))
-                            Mono.error(UserAlreadyHasSuchCertificateException("User ${userInfo.login} already has certificate with id $certificateId"))
-                        else Mono.just(userInfo)
-                    }
+        userCertificatesDao.getUserAvailableCertificates(authentication.name)
+            .collectList()
+            .flatMap { userCertificates ->
+                if (userCertificates.map { it.certificateId }.contains(certificateId))
+                    Mono.error(UserAlreadyHasSuchCertificateException("User ${authentication.name} already has certificate with id $certificateId"))
+                else Mono.just(authentication.name)
             }
             .flatMap { certificatesDao.getCertificateById(certificateId) }
-            .flatMap { certificate -> sendPaymentRequest(certificate.price, userCardInfo) }
+            .flatMap { certificate ->
+                println("SENDING REQUEST $certificate")
+                sendPaymentRequest(certificate.price, userCardInfo)
+            }
             .flatMap {
                 certificatesTransactionsDao
                     .insertTransactionInfo(it, authentication.name, certificateId, TransactionStatus.CREATED.name)

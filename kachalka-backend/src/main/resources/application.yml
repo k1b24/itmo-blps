@@ -2,19 +2,21 @@ spring:
   application:
     name: kachalka-backend
   r2dbc:
-    url: r2dbc:postgresql://localhost:5434/postgres
-    username: k1b
-    password: deadinside\
+    url: r2dbc:postgresql://kachalka-postgresql:5432/kachalka
+#    url: r2dbc:postgresql://localhost:5433/kachalka
+    username: kachalka
+    password: kachalka
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:1337/realms/Kachalka
+#          issuer-uri: http://localhost:1337/realms/Kachalka
+                issuer-uri: http://keycloak:8080/realms/Kachalka
       client:
         provider:
           keycloak:
-            issuer-uri: http://localhost:1337/realms/Kachalka
-            user-name-attribute: preferred_username
+            issuer-uri: http://keycloak:8080/realms/Kachalka
+#            issuer-uri: http://localhost:1337/realms/Kachalka
         registration:
           keycloak:
             client-id: kachalka-backend-security
@@ -27,7 +29,8 @@ spring:
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-    bootstrap-servers: localhost:29092
+#    bootstrap-servers: localhost:29092
+    bootstrap-servers: kafka:29093
 
 listener:
   certificate-bought-topic: kachalka-user-certificate-bought-event
@@ -39,9 +42,6 @@ rsa:
   key-path: "certs/key-tg6LK8DqJ0yR8PlZUABTLZZwIC-NKb6jB4tICAaU83I-private.json"
 
 security:
-#  admin-permission-name: ADMIN
-#  admin-users:
-#    - s.lazeev
   permissions:
     ADMIN:
       - EDIT_CERTIFICATES
@@ -50,3 +50,9 @@ security:
       - EDIT_CERTIFICATES
     USER:
       - BUY_CERTIFICATES
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
