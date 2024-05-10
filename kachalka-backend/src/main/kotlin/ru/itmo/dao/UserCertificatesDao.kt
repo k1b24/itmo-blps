@@ -63,7 +63,7 @@ class UserCertificatesDao(
                 certificateId = row.getOrThrow("id"),
                 title = row.getOrThrow("title"),
                 expirationDate = row.getOrThrow("expires_at"),
-                description = row.getOrThrow("description"),
+                description = row.getNullable("description"),
             )
         }
         .first()

@@ -29,6 +29,8 @@ dependencies {
     implementation("org.springframework.security:spring-security-oauth2-client")
     implementation("com.nimbusds:nimbus-jose-jwt")
     implementation("io.projectreactor.kafka:reactor-kafka")
+    implementation("org.springframework.boot:spring-boot-starter-mail")
+//    implementation("com.sun.mail:javax.mail:")
 
     implementation(project(mapOf("path" to ":sper-bank-model")))
 

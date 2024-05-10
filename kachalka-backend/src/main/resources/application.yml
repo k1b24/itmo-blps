@@ -27,6 +27,17 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
     bootstrap-servers: localhost:29092
+  mail:
+    host: "smtp.gmail.com"
+    port: 587
+    username: lazeevsergeyps@gmail.com
+    password: ijdjtwpoyfsqnodc
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
 
 listener:
   certificate-bought-topic: kachalka-user-certificate-bought-event
