@@ -2,6 +2,7 @@ package ru.itmo.controller
 
 import org.springframework.http.MediaType
 import org.springframework.security.core.Authentication
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -21,7 +22,11 @@ class UserCertificatesController(
         @RequestBody userCardInfo: UserCardInfo,
         authentication: Authentication,
     ): Mono<Void> = userCertificatesService
-        .registerCertificateToUserAndGenerateQrCode(certificateId, userCardInfo, authentication)
+        .registerCertificateToUserAndGenerateQrCode(
+            certificateId,
+            userCardInfo,
+            authentication as JwtAuthenticationToken,
+        )
 
     @GetMapping("/certificates")
     fun getAvailableCertificates(

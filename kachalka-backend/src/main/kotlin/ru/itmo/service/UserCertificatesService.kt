@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.HttpStatus
 import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate
 import org.springframework.security.core.Authentication
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.WebClient
@@ -47,7 +48,7 @@ class UserCertificatesService(
     fun registerCertificateToUserAndGenerateQrCode(
         certificateId: UUID,
         userCardInfo: UserCardInfo,
-        authentication: Authentication,
+        authentication: JwtAuthenticationToken,
     ): Mono<Void> =
         userCertificatesDao.getUserAvailableCertificates(authentication.name)
             .collectList()
@@ -63,7 +64,7 @@ class UserCertificatesService(
             }
             .flatMap {
                 certificatesTransactionsDao
-                    .insertTransactionInfo(it, authentication.name, certificateId, TransactionStatus.CREATED.name)
+                    .insertTransactionInfo(it, authentication.name, authentication.tokenAttributes["email"] as String, certificateId, TransactionStatus.CREATED.name)
             }
             .then()
 
@@ -75,6 +76,7 @@ class UserCertificatesService(
                     handleSuccessTransaction(
                         certificateTransactionEntity.certificateId,
                         certificateTransactionEntity.userLogin,
+                        certificateTransactionEntity.userEmail,
                     )
                         .then(certificatesTransactionsDao.updateTransactionStatus(transactionId, transactionStatus.name))
                 } else {
@@ -82,7 +84,7 @@ class UserCertificatesService(
                 }
             }
 
-    fun handleSuccessTransaction(certificateId: UUID, userLogin: String): Mono<Void> =
+    fun handleSuccessTransaction(certificateId: UUID, userLogin: String, userEmail: String): Mono<Void> =
         certificatesDao.getCertificateById(certificateId)
             .flatMap {
                 userCertificatesDao.addNewCertificateToUser(
@@ -90,13 +92,13 @@ class UserCertificatesService(
                     certificateId,
                     Instant.now().plus(it.duration).toTheEndOfTheDay(),
                 )
-            }.then(sendUserCertificateBoughtEvent(certificateId, userLogin))
+            }.then(sendUserCertificateBoughtEvent(certificateId, userLogin, userEmail))
 
-    fun sendUserCertificateBoughtEvent(certificateId: UUID, userLogin: String): Mono<Void> =
+    fun sendUserCertificateBoughtEvent(certificateId: UUID, userLogin: String, userEmail: String): Mono<Void> =
         kafkaTemplate
             .send(
                 kachalkaKafkaProperties.certificateBoughtTopic,
-                CertificateBoughtEvent(userLogin, certificateId),
+                CertificateBoughtEvent(userLogin, userEmail, certificateId),
             )
             .then()
 

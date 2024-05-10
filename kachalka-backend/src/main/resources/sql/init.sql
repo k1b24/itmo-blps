@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS certificates_to_users (
 CREATE TABLE certificates_transactions (
     transaction_id      UUID PRIMARY KEY,
     user_login          VARCHAR(128),
+    user_email          VARCHAR(128),
     certificate_id      UUID,
     transaction_status  TEXT,
     CONSTRAINT certificate_id_fk
