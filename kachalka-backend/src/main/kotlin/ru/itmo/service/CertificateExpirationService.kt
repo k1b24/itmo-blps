@@ -14,9 +14,7 @@ class CertificateExpirationService(
 
     @Scheduled(fixedDelay = 1000)
     fun invalidateCertificates() {
-        println("ZHOPA")
         userCertificatesDao.invalidateUsersCertificates().subscribeOn(Schedulers.parallel()).subscribe()
-        println("INVALIDATED")
     }
 
 }
