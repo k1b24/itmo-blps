@@ -1,0 +1,8 @@
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://sper-bank-postgresql:5432/sper-bank
+server:
+  port: 8081
+
+kachalka:
+  baseUrl: http://balancer
