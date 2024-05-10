@@ -16,16 +16,18 @@ class CertificatesTransactionsDao(
     fun insertTransactionInfo(
         transactionId: UUID,
         userLogin: String,
+        userEmail: String,
         certificateId: UUID,
         transactionStatus: String,
     ): Mono<Void> = databaseClient.sql(
         """
-            INSERT INTO certificates_transactions (transaction_id, user_login, certificate_id, transaction_status) 
-                VALUES (:transaction_id, :user_login, :certificate_id, :transaction_status)
+            INSERT INTO certificates_transactions (transaction_id, user_login, user_email, certificate_id, transaction_status) 
+                VALUES (:transaction_id, :user_login, :user_email, :certificate_id, :transaction_status)
         """.trimIndent()
     )
         .bind("transaction_id", transactionId)
         .bind("user_login", userLogin)
+        .bind("user_email", userEmail)
         .bind("certificate_id", certificateId)
         .bind("transaction_status", transactionStatus)
         .then()
@@ -40,6 +42,7 @@ class CertificatesTransactionsDao(
             CertificateTransactionEntity(
                 transactionId = row.getOrThrow("transaction_id"),
                 userLogin = row.getOrThrow("user_login"),
+                userEmail = row.getOrThrow("user_email"),
                 certificateId = row.getOrThrow("certificate_id"),
                 transactionStatus = TransactionStatus.valueOf(row.getOrThrow("transaction_status")),
             )
