@@ -1,0 +1,16 @@
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://kachalka-postgresql:5432/kachalka
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/Kachalka
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://keycloak:8080/realms/Kachalka
+
+  kafka:
+    bootstrap-servers: kafka:29093

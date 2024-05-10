@@ -84,4 +84,13 @@ class UserCertificatesDao(
             Mono.error(NoSuchElementException("Certificate $certificateId not fot for user $userLogin"))
         }
         .then()
+
+    fun invalidateUsersCertificates(): Mono<Void> = databaseClient
+        .sql(
+            """
+                UPDATE certificates_to_users SET is_active = false
+                    WHERE expires_at < now()
+            """.trimIndent()
+        )
+        .then()
 }

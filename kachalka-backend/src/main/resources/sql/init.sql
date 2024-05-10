@@ -30,6 +30,8 @@ CREATE TABLE IF NOT EXISTS certificates_to_users (
     PRIMARY KEY (user_login, certificate_id)
 );
 
+CREATE INDEX idx_is_active ON certificates_to_users USING btree(is_active);
+
 CREATE TABLE certificates_transactions (
     transaction_id      UUID PRIMARY KEY,
     user_login          VARCHAR(128),
