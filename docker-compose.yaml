@@ -51,6 +51,8 @@ services:
 
   sper-bank:
     container_name: sper-bank
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
     image: openjdk:17-ea-16-jdk
     volumes:
       - ./sper-bank/build/libs/sper-bank-0.0.1-SNAPSHOT.jar:/sper-bank.jar
