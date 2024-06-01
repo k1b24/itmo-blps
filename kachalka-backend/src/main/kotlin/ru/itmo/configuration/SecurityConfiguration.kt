@@ -30,6 +30,7 @@ class SecurityConfiguration {
                 authorize(ServerWebExchangeMatchers.pathMatchers(GET, "/v1/certificates"), hasAuthority(UserPermission.BUY_CERTIFICATES.name))
                 authorize("/v1/certificates/**", hasAuthority(UserPermission.EDIT_CERTIFICATES.name))
                 authorize("/v1/moderators/**", hasAuthority(UserPermission.GRANT_MODERATOR_PERMISSIONS.name))
+                authorize(anyExchange, permitAll)
             }
 
             oauth2ResourceServer {

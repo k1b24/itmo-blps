@@ -96,7 +96,7 @@ services:
       - POSTGRES_DB=keycloak
       - POSTGRES_PASSWORD=SUPERsecret
     volumes:
-      - '/Users/k1b/Documents/study/postgresql_docker:/var/lib/postgresql/data'
+      - '/Users/s.lazeev/Documents/study/postgresql_docker:/var/lib/postgresql/data'
     networks:
       - kachalka-network
     expose:
@@ -193,6 +193,30 @@ services:
     links:
       - kafka
       - zookeeper
+    networks:
+      - kachalka-network
+
+  grafana:
+    build: './config/grafana'
+    ports:
+      - 3001:3000
+    volumes:
+      - ./grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - kachalka-network
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9091:9090
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus:/prometheus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - kachalka-network
 

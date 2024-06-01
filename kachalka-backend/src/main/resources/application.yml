@@ -38,6 +38,8 @@ spring:
 #          auth: true
 #          starttls:
 #            enable: true
+  jmx:
+    enabled: true
 
 listener:
   certificate-bought-topic: kachalka-user-certificate-bought-event
@@ -63,3 +65,16 @@ logging:
     org:
       springframework:
         security: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true

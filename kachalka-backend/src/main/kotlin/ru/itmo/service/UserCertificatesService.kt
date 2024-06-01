@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
+import ru.itmo.configuration.MetricsService
 import ru.itmo.configuration.kafka.KachalkaKafkaProperties
 import ru.itmo.dao.CertificatesDao
 import ru.itmo.dao.CertificatesTransactionsDao
@@ -43,6 +44,7 @@ class UserCertificatesService(
     private val certificatesTransactionsDao: CertificatesTransactionsDao,
     private val kafkaTemplate: ReactiveKafkaProducerTemplate<String, CertificateBoughtEvent>,
     private val kachalkaKafkaProperties: KachalkaKafkaProperties,
+    private val metricsService: MetricsService,
 ) {
 
     fun registerCertificateToUserAndGenerateQrCode(
@@ -81,6 +83,9 @@ class UserCertificatesService(
                         .then(certificatesTransactionsDao.updateTransactionStatus(transactionId, transactionStatus.name))
                 } else {
                     certificatesTransactionsDao.updateTransactionStatus(transactionId, transactionStatus.name)
+                        .also {
+                            metricsService.countFailedCertificatePurchase()
+                        }
                 }
             }
 
@@ -93,6 +98,9 @@ class UserCertificatesService(
                     Instant.now().plus(it.duration).toTheEndOfTheDay(),
                 )
             }.then(sendUserCertificateBoughtEvent(certificateId, userLogin, userEmail))
+            .also {
+                metricsService.countSuccessCertificatePurchase()
+            }
 
     fun sendUserCertificateBoughtEvent(certificateId: UUID, userLogin: String, userEmail: String): Mono<Void> =
         kafkaTemplate

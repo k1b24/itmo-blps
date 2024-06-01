@@ -30,6 +30,8 @@ dependencies {
     implementation("com.nimbusds:nimbus-jose-jwt")
     implementation("io.projectreactor.kafka:reactor-kafka")
     implementation("org.springframework.boot:spring-boot-starter-mail")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.micrometer:micrometer-registry-prometheus")
 //    implementation("com.sun.mail:javax.mail:")
 
     implementation(project(mapOf("path" to ":sper-bank-model")))
