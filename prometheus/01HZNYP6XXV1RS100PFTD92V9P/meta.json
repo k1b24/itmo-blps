@@ -1,0 +1,17 @@
+{
+	"ulid": "01HZNYP6XXV1RS100PFTD92V9P",
+	"minTime": 1717639203934,
+	"maxTime": 1717646400000,
+	"stats": {
+		"numSamples": 4046400,
+		"numSeries": 2810,
+		"numChunks": 34069
+	},
+	"compaction": {
+		"level": 1,
+		"sources": [
+			"01HZNYP6XXV1RS100PFTD92V9P"
+		]
+	},
+	"version": 1
+}
